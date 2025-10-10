@@ -8,15 +8,18 @@ import com.example.sdt.repo.PackageRepository;
 import com.example.sdt.web.dto.PackageCreateDto;
 import com.example.sdt.web.dto.PackageDto;
 import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.net.URI;
 import java.time.Instant;
-import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 public class PackageController {
@@ -80,6 +83,7 @@ public class PackageController {
     }
 
     // --- DELIVER PACKAGE ---
+
     @PostMapping("/packages/{id}/deliver")
     @Transactional
     public PackageDto deliver(@PathVariable Long id) {
@@ -102,11 +106,11 @@ public class PackageController {
     // --- LIST PACKAGES FOR A COURIER ---
 
     @GetMapping("/couriers/{courierId}/packages")
-    public List<PackageDto> listByCourier(@PathVariable Long courierId) {
+    public Page<PackageDto> listByCourier(@PathVariable Long courierId, Pageable pageable) {
         if (!courierRepo.existsById(courierId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Courier not found");
         }
-        return packageRepo.findByCourierId(courierId).stream().map(this::toDto).toList();
+        return packageRepo.findByCourierId(courierId,pageable).map(this::toDto);
     }
 
     // --- helper: mapare entitate -> DTO ---
