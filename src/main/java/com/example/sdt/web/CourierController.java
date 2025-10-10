@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @RestController
 @RequestMapping("/api/couriers")
 public class CourierController {
@@ -48,8 +51,8 @@ public class CourierController {
     // --- READ all---
 
     @GetMapping
-    public List<CourierDto> list() {
-        return courierRepo.findAll().stream().map(this::toDto).toList();
+    public Page<CourierDto> list(Pageable pageable) {
+        return courierRepo.findAll(pageable).map(this::toDto);
     }
 
     // --- READ one ---
