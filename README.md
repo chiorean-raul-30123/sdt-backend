@@ -1,4 +1,4 @@
-
+# Smart Delivery Tracker - Backend (Step 1A)
 
 Spring Boot skeleton with a simple health endpoint.
 
@@ -11,5 +11,4 @@ Spring Boot skeleton with a simple health endpoint.
 mvn spring-boot:run
 ```
 Open: <http://localhost:8080/api/health>
-
 
