@@ -1,15 +1,15 @@
 # Smart Delivery Tracker - Backend 
 
-Spring Boot skeleton with a simple health endpoint.
+## Dev quick-start (Windows)
 
-## Prerequisites
-- Java 21 (`java -version`)
-- Maven 3.9+ (`mvn -v`)
+### Requirements
+- Rancher Desktop (sau Docker Desktop) pornit
+- Java 21, Maven
+- Node 18+ (pentru UI)
 
-## Run
-```bash
-mvn spring-boot:run
-```
-Open: <http://localhost:8080/api/health>
+### One-liner
+```powershell
+.\scripts\dev-up.ps1
+
 
 
