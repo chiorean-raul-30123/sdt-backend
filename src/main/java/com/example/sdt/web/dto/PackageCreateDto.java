@@ -16,6 +16,8 @@ public class PackageCreateDto {
 
     private Double weightKg;
 
+    public Long courierId;
+
     //  ---CONSTRUCTOR---
 
     public PackageCreateDto() {}
@@ -33,4 +35,12 @@ public class PackageCreateDto {
 
     public Double getWeightKg() { return weightKg; }
     public void setWeightKg(Double weightKg) { this.weightKg = weightKg; }
+
+    public Long getCourierId() {
+        return courierId;
+    }
+
+    public void setCourierId(Long courierId) {
+        this.courierId = courierId;
+    }
 }
