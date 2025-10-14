@@ -38,7 +38,7 @@ public class PackageDelivery {
     private String deliveryAddress;
 
 
-    @ManyToOne
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "courier_id")
     private Courier courier;
 

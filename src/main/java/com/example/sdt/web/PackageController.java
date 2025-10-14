@@ -46,9 +46,14 @@ public class PackageController {
         p.setWeightKg(dto.getWeightKg());
         p.setStatus(PackageStatus.NEW);
 
-        PackageDelivery saved = packageRepo.save(p);
-        PackageDto out = toDto(saved);
-        return ResponseEntity.created(URI.create("/api/packages/" + saved.getId())).body(out);
+        if (dto.courierId != null) {
+            Courier c = courierRepo.findById(dto.courierId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Courier not found"));
+            p.setCourier(c);
+        }
+
+        p = packageRepo.save(p);
+        return ResponseEntity.status(HttpStatus.CREATED).body(toDto(p));
     }
 
     // --- GET BY ID (util pentru testare) ---
