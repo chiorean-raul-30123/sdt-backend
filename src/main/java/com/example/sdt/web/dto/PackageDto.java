@@ -14,7 +14,8 @@ public class PackageDto {
 
     private Long courierId;       // poate fi null
     private Instant assignedAt;   // poate fi null
-    private Instant deliveredAt;  // poate fi null
+    private Instant deliveredAt;
+    private Long senderCustomerId;
 
     //   --- Cosntructori---
 
@@ -48,4 +49,7 @@ public class PackageDto {
 
     public Instant getDeliveredAt() { return deliveredAt; }
     public void setDeliveredAt(Instant deliveredAt) { this.deliveredAt = deliveredAt; }
+
+    public Long getSenderCustomerId() { return senderCustomerId; }
+    public void setSenderCustomerId(Long senderCustomerId) { this.senderCustomerId = senderCustomerId; }
 }

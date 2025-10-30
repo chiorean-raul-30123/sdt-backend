@@ -12,4 +12,7 @@ public interface PackageRepository extends JpaRepository<PackageDelivery, Long> 
     Page<PackageDelivery> findByCourierId(Long courierId, Pageable pageable);
     List<PackageDelivery> findByStatus(PackageStatus status);
     Optional<PackageDelivery> findByTrackingCode(String trackingCode);
+    boolean existsByTrackingCode(String trackingCode);
+    Page<PackageDelivery> findBySenderId(Long senderId, Pageable pageable);
+    long countBySenderId(Long senderId);
 }

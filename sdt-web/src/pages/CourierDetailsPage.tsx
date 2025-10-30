@@ -94,8 +94,8 @@ export default function CourierDetailsPage() {
           <CreatePackageForm
             requiredCourierId={courierId}
             onCreated={() => {
-
               setPage(0);
+              window.location.reload();
             }}
             onCancel={() => setShowCreatePkg(false)}
           />

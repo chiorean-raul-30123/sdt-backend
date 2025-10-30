@@ -37,7 +37,6 @@ export type PackageDto = {
   deliveredAt?: string | null;
 };
 export type PackageCreateDto = {
-  trackingCode: string;
   pickupAddress: string;
   deliveryAddress: string;
   weightKg?: number | null;
