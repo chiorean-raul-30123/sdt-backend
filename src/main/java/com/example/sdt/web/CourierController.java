@@ -26,7 +26,6 @@ public class CourierController {
     // --- CREATE ---
     @PostMapping
     public ResponseEntity<CourierDto> create(@Valid @RequestBody CourierDto dto) {
-        // prevenim dubluri pe email
         courierRepo.findByEmail(dto.getEmail())
                 .ifPresent(c -> { throw new IllegalArgumentException("Email already used"); });
 
@@ -73,7 +72,6 @@ public class CourierController {
 
         if (dto.getName() != null) c.setName(dto.getName());
         if (dto.getEmail() != null) {
-            // dacă email se schimbă, verifică unicitatea
             courierRepo.findByEmail(dto.getEmail())
                     .filter(other -> !other.getId().equals(id))
                     .ifPresent(other -> { throw new IllegalArgumentException("Email already used"); });

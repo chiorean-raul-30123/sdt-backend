@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { PackageCreateDto } from "../types";
 import { createPackage } from "../lib/packages";
 
+
 type Props = {
   requiredCourierId?: number;
   onCreated?: () => void;
@@ -31,7 +32,7 @@ export default function CreatePackageForm(props: Props) {
     e.stopPropagation();
     setError(null);
 
-    if (!form.trackingCode.trim()) return setError("Tracking code is required");
+
     if (!form.pickupAddress.trim()) return setError("Pickup address is required");
     if (!form.deliveryAddress.trim()) return setError("Delivery address is required");
     if (form.weightKg != null && (isNaN(Number(form.weightKg)) || Number(form.weightKg) < 0)) {
@@ -41,7 +42,6 @@ export default function CreatePackageForm(props: Props) {
     try {
       setLoading(true);
       await createPackage({
-        trackingCode: form.trackingCode.trim(),
         pickupAddress: form.pickupAddress.trim(),
         deliveryAddress: form.deliveryAddress.trim(),
         weightKg: form.weightKg === null ? null : Number(form.weightKg),
@@ -62,16 +62,6 @@ export default function CreatePackageForm(props: Props) {
       {error && <p style={{ color: "crimson" }}>{error}</p>}
 
       <div style={{ display: "grid", gap: 8, gridTemplateColumns: "1fr 1fr" }}>
-        <label>
-          Tracking Code
-          <input
-            value={form.trackingCode}
-            onChange={(e) => set("trackingCode", e.target.value)}
-            placeholder="TRK-000123"
-            required
-            style={{ width: "100%" }}
-          />
-        </label>
 
         <label>
           Weight (kg)

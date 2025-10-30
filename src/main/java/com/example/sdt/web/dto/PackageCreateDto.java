@@ -1,12 +1,10 @@
 package com.example.sdt.web.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotNull;
 
 public class PackageCreateDto {
-    @NotBlank
-    @Pattern(regexp = "^[A-Z]{2}\\d{10}$", message = "trackingCode must be like RO1234567890")
-    private String trackingCode;
+
 
     @NotBlank
     private String pickupAddress;
@@ -17,6 +15,8 @@ public class PackageCreateDto {
     private Double weightKg;
 
     public Long courierId;
+    @NotNull
+    public Long senderCustomerId;
 
     //  ---CONSTRUCTOR---
 
@@ -24,8 +24,6 @@ public class PackageCreateDto {
 
     //  ---GETTERI+SETTERI
 
-    public String getTrackingCode() { return trackingCode; }
-    public void setTrackingCode(String trackingCode) { this.trackingCode = trackingCode; }
 
     public String getPickupAddress() { return pickupAddress; }
     public void setPickupAddress(String pickupAddress) { this.pickupAddress = pickupAddress; }
@@ -42,5 +40,13 @@ public class PackageCreateDto {
 
     public void setCourierId(Long courierId) {
         this.courierId = courierId;
+    }
+
+    public Long getSenderCustomerId() {
+        return senderCustomerId;
+    }
+
+    public void setSenderCustomerId(Long senderCustomerId) {
+        this.senderCustomerId = senderCustomerId;
     }
 }

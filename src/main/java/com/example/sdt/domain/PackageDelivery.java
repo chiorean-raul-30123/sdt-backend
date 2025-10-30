@@ -19,7 +19,7 @@ public class PackageDelivery {
     private Long id;
 
     @NotBlank
-    @Column(name = "tracking_code", nullable = false, unique = true, length = 40)
+    @Column(name = "tracking_code", nullable = false, unique = true, length = 12)
     private String trackingCode;
 
     @NotNull
@@ -45,6 +45,10 @@ public class PackageDelivery {
     private Instant assignedAt;
     private Instant deliveredAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_customer_id", nullable = false)
+    private Customer sender;
+
     // ---CONSTRUCTORI---
     public PackageDelivery() {}
 
@@ -59,6 +63,7 @@ public class PackageDelivery {
     public Courier getCourier() { return courier; }
     public Instant getAssignedAt() { return assignedAt; }
     public Instant getDeliveredAt() { return deliveredAt; }
+    public Customer getSender() { return sender;  }
 
     public void setId(Long id) { this.id = id; }
     public void setTrackingCode(String trackingCode) { this.trackingCode = trackingCode; }
@@ -69,4 +74,6 @@ public class PackageDelivery {
     public void setCourier(Courier courier) { this.courier = courier; }
     public void setAssignedAt(Instant assignedAt) { this.assignedAt = assignedAt; }
     public void setDeliveredAt(Instant deliveredAt) { this.deliveredAt = deliveredAt; }
+    public void setSender(Customer sender) { this.sender = sender; }
+
 }
