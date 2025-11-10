@@ -53,4 +53,5 @@ public class Courier {
 
     public Double getLastLng() { return lastLng; }
     public void setLastLng(Double lastLng) { this.lastLng = lastLng; }
+
 }

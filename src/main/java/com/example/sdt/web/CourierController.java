@@ -3,8 +3,10 @@ package com.example.sdt.web;
 import com.example.sdt.domain.Courier;
 import com.example.sdt.repo.CourierRepository;
 import com.example.sdt.web.dto.CourierDto;
+import com.example.sdt.web.dto.CourierPatchDto;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -12,6 +14,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/couriers")
@@ -89,6 +92,33 @@ public class CourierController {
         }
 
         return toDto(courierRepo.save(c));
+    }
+
+    @PatchMapping("/{id}")
+    @Transactional
+    public CourierDto patch(@PathVariable Long id, @Valid @RequestBody CourierPatchDto body) {
+        Courier c = courierRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Courier not found"));
+
+        if (body.name != null) c.setName(body.name.trim());
+        if (body.getEmail() != null) {
+            courierRepo.findByEmail(body.getEmail())
+                    .filter(other -> !other.getId().equals(id))
+                    .ifPresent(other -> { throw new IllegalArgumentException("Email already used"); });
+            c.setEmail(body.getEmail());
+        }
+        if (body.getManagerId() != null) {
+            Courier mgr = courierRepo.findById(body.getManagerId())
+                    .orElseThrow(() -> new IllegalArgumentException("Manager not found"));
+            c.setManager(mgr);
+        } else {
+            c.setManager(null);
+        }
+        if (body.lastLat != null) c.setLastLat(body.lastLat);
+        if (body.lastLng != null) c.setLastLng(body.lastLng);
+
+        c = courierRepo.save(c);
+        return toDto(c);
     }
 
     // ---DELETE---

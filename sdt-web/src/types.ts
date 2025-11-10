@@ -2,7 +2,7 @@ export type Page<T> = {
   content: T[];
   totalElements: number;
   totalPages: number;
-  number: number;   // page index
+  number: number;
   size: number;
 };
 
@@ -41,4 +41,28 @@ export type PackageCreateDto = {
   deliveryAddress: string;
   weightKg?: number | null;
   courierId?: number | null;
+  senderCustomerId: number;
 };
+
+export type CustomerDto = {
+  id: number;
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  address?: string | null;
+};
+
+export type CustomerCreateDto = {
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  address?: string | null;
+};
+
+export type CourierPatchDto = Partial<{
+  name: string;
+  email: string;
+  managerId: number | null;
+  lastLat: number | null;
+  lastLng: number | null;
+}>;

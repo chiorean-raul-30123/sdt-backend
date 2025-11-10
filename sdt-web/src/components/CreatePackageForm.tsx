@@ -1,27 +1,53 @@
-import { useState } from "react";
+
 import type { PackageCreateDto } from "../types";
 import { createPackage } from "../lib/packages";
+import { fetchCustomers } from "../lib/customers";
+import type { CustomerDto } from "../types";
+import { useEffect, useState } from "react";
 
 
 type Props = {
   requiredCourierId?: number;
+  requiredSenderId?: number;
   onCreated?: () => void;
   onCancel?: () => void;
 };
 
 export default function CreatePackageForm(props: Props) {
-  const { requiredCourierId, onCreated, onCancel } = props;
+  const { requiredCourierId, requiredSenderId, onCreated, onCancel } = props;
+
+  useEffect(() => {
+      if (requiredSenderId != null) {
+        setForm(s => ({ ...s, senderCustomerId: requiredSenderId }));
+      }
+    }, [requiredSenderId]);
 
   const [form, setForm] = useState<PackageCreateDto>({
-    trackingCode: "",
-    pickupAddress: "",
-    deliveryAddress: "",
-    weightKg: null,
-    courierId: requiredCourierId ?? null,
-  });
+      pickupAddress: "",
+      deliveryAddress: "",
+      weightKg: null,
+      courierId: requiredCourierId ?? null,
+      senderCustomerId: 0,
+    });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [customers, setCustomers] = useState<CustomerDto[]>([]);
+  const [loadingCustomers, setLoadingCustomers] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoadingCustomers(true);
+        const page1 = await fetchCustomers({ page: 0, size: 50 });
+        const list = page1.items ?? [];
+        setCustomers(list);
+      } finally {
+        setLoadingCustomers(false);
+      }
+    })();
+  }, []);
 
   function set<K extends keyof PackageCreateDto>(k: K, v: PackageCreateDto[K]) {
     setForm(s => ({ ...s, [k]: v }));
@@ -38,6 +64,9 @@ export default function CreatePackageForm(props: Props) {
     if (form.weightKg != null && (isNaN(Number(form.weightKg)) || Number(form.weightKg) < 0)) {
       return setError("Weight must be a positive number");
     }
+    if (!form.senderCustomerId || Number(form.senderCustomerId) <= 0) {
+       return setError("Sender (customer) is required");
+    }
 
     try {
       setLoading(true);
@@ -46,6 +75,7 @@ export default function CreatePackageForm(props: Props) {
         deliveryAddress: form.deliveryAddress.trim(),
         weightKg: form.weightKg === null ? null : Number(form.weightKg),
         courierId: requiredCourierId ?? null,
+        senderCustomerId: Number(form.senderCustomerId),
       });
       onCreated?.();
       onCancel?.();
@@ -96,6 +126,25 @@ export default function CreatePackageForm(props: Props) {
             style={{ width: "100%" }}
           />
         </label>
+         <label style={{ gridColumn: "1 / -1" }}>
+           Sender (Customer) *
+           <select
+             required
+             value={form.senderCustomerId ?? ""}
+             onChange={(e) =>
+               set("senderCustomerId", e.target.value === "" ? null : Number(e.target.value))
+             }
+             style={{ width: "100%" }}
+           >
+             <option value="">-- Select customer --</option>
+             {loadingCustomers && <option disabled>Loading...</option>}
+             {customers.map((c) => (
+               <option key={c.id} value={c.id}>
+                 {c.name} {c.email ? `(${c.email})` : ""}
+               </option>
+             ))}
+           </select>
+         </label>
 
         {requiredCourierId == null && (
           <label>
