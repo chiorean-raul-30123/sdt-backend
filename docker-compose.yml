@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres:16
+    container_name: sdt_postgres
+    environment:
+      POSTGRES_DB: sdt
+      POSTGRES_USER: sdt
+      POSTGRES_PASSWORD: sdt
+    ports:
+      - "5433:5432"
+    volumes:
+      - sdt_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sdt -d sdt"]
+      interval: 5s
+      retries: 10
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: sdt_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  sdt_pg:
