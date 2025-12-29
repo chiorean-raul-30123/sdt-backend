@@ -10,8 +10,3 @@ Minimal Spring Boot skeleton with a simple health endpoint.
 ```bash
 mvn spring-boot:run
 ```
-Open: <http://localhost:8080/api/health>
-
-## Next step
-After this runs, we will add DB + JPA + docker-compose in Step 1B.
-Generated on: 2025-10-09
