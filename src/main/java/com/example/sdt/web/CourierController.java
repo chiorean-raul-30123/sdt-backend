@@ -14,8 +14,8 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.server.ResponseStatusException;
 
+@CrossOrigin(origins = {"http://localhost:5173","http://127.0.0.1:5173"})
 @RestController
 @RequestMapping("/api/couriers")
 public class CourierController {

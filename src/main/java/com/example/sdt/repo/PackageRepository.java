@@ -15,4 +15,5 @@ public interface PackageRepository extends JpaRepository<PackageDelivery, Long> 
     boolean existsByTrackingCode(String trackingCode);
     Page<PackageDelivery> findBySenderId(Long senderId, Pageable pageable);
     long countBySenderId(Long senderId);
+    List<PackageDelivery> findTop5BySenderIdOrderByIdDesc(Long senderId);
 }

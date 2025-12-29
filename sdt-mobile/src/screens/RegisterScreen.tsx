@@ -1,120 +1,276 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
-import { COLORS, GAP, RADIUS } from "../constants/theme";
-import StyledInput from "../components/StyledInput";
-import { useAuth } from "../context/AuthContext";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { AuthStackParamList } from "../types/navigation";
+import { useAuth, RegisterPayload } from "../context/AuthContext";
 
-export default function RegisterScreen({ navigation }: any) {
+type Props = NativeStackScreenProps<AuthStackParamList, "Register">;
+
+export default function RegisterScreen({ navigation }: Props) {
   const { register } = useAuth();
+
   const [form, setForm] = useState({
+    name: "",
     email: "",
     password: "",
-    name: "",
     phone: "",
     pickupAddress: "",
-    deliveryAddress: "",
-    contactPerson: "",
   });
-  const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const set = (k: keyof typeof form, v: string) => setForm((s) => ({ ...s, [k]: v }));
+  const setField = (key: keyof typeof form, value: string) =>
+    setForm((prev) => ({ ...prev, [key]: value }));
 
   const onSubmit = async () => {
-    setErr(null);
-    if (!form.email.trim() || !form.password || !form.name.trim()) {
-      setErr("Email, parolă și nume sunt obligatorii.");
+    if (!form.name.trim() || !form.email.trim() || !form.password.trim()) {
+      setError("Nume, email și parolă sunt obligatorii.");
       return;
     }
+    setError(null);
+
+    const payload: RegisterPayload = {
+      email: form.email.trim(),
+      password: form.password,
+      name: form.name.trim(),
+      phone: form.phone || null,
+      pickupAddress: form.pickupAddress || null,
+      deliveryAddress: null,
+      contactPerson: null,
+    };
+
     try {
       setLoading(true);
-      await register({
-        email: form.email.trim().toLowerCase(),
-        password: form.password,
-        name: form.name.trim(),
-        phone: form.phone || null,
-        pickupAddress: form.pickupAddress || null,
-        deliveryAddress: form.deliveryAddress || null,
-        contactPerson: form.contactPerson || null,
-      });
-      navigation.replace("Home");
+      await register(payload);
     } catch (e: any) {
-      setErr(e?.response?.data?.message || "Înregistrare eșuată");
+      setError(
+        e?.response?.data?.message ||
+          e?.message ||
+          "Înregistrarea a eșuat. Încearcă din nou."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: COLORS.bg }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    <LinearGradient
+      colors={["#5B4BDF", "#7B5CFF"]}
+      style={styles.gradient}
     >
-      <ScrollView contentContainerStyle={{ padding: 24 }}>
-        <Text style={{ color: COLORS.text, fontSize: 28, fontWeight: "700", marginBottom: 8 }}>
-          Sign Up
-        </Text>
-        <Text style={{ color: COLORS.textMuted, marginBottom: 24 }}>
-          Creează un cont nou. Dacă email-ul corespunde unui curier din backend, vei fi curier; altfel, customer.
-        </Text>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.card}>
+            <View style={styles.illustrationCircle}>
+              <View style={styles.doorShape} />
+            </View>
 
-        <View style={{ backgroundColor: COLORS.card, borderRadius: 20, padding: 18, gap: GAP }}>
-          {err && <Text style={{ color: COLORS.danger, marginBottom: 4 }}>{err}</Text>}
-
-          <StyledInput label="Nume" value={form.name} onChangeText={(v) => set("name", v)} />
-          <StyledInput
-            label="Email"
-            value={form.email}
-            onChangeText={(v) => set("email", v)}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
-          <StyledInput
-            label="Parolă"
-            value={form.password}
-            onChangeText={(v) => set("password", v)}
-            secureTextEntry
-          />
-          <StyledInput label="Telefon" value={form.phone} onChangeText={(v) => set("phone", v)} />
-          <StyledInput
-            label="Adresa ridicare (opțional)"
-            value={form.pickupAddress}
-            onChangeText={(v) => set("pickupAddress", v)}
-          />
-          <StyledInput
-            label="Adresa livrare (opțional)"
-            value={form.deliveryAddress}
-            onChangeText={(v) => set("deliveryAddress", v)}
-          />
-          <StyledInput
-            label="Persoană contact (opțional)"
-            value={form.contactPerson}
-            onChangeText={(v) => set("contactPerson", v)}
-          />
-
-          <TouchableOpacity
-            onPress={onSubmit}
-            disabled={loading}
-            style={{
-              backgroundColor: COLORS.accent,
-              paddingVertical: 14,
-              borderRadius: RADIUS,
-              alignItems: "center",
-              marginTop: 4,
-            }}
-          >
-            <Text style={{ color: "white", fontWeight: "700" }}>
-              {loading ? "Se creează..." : "Sign Up"}
+            <Text style={styles.title}>Sign Up</Text>
+            <Text style={styles.subtitle}>
+              Creează-ți un cont și trimite colete în câteva secunde.
             </Text>
-          </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginTop: 8 }}>
-            <Text style={{ color: COLORS.textMuted, textAlign: "center" }}>
-              Ai deja cont? <Text style={{ color: COLORS.text }}>Login</Text>
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+            <View style={styles.field}>
+              <Text style={styles.label}>Nume</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Ion Popescu"
+                placeholderTextColor="#B0B3C0"
+                value={form.name}
+                onChangeText={(v) => setField("name", v)}
+              />
+            </View>
+
+            <View style={styles.field}>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="ion.popescu@example.com"
+                placeholderTextColor="#B0B3C0"
+                autoCapitalize="none"
+                keyboardType="email-address"
+                value={form.email}
+                onChangeText={(v) => setField("email", v)}
+              />
+            </View>
+
+            <View style={styles.field}>
+              <Text style={styles.label}>Parolă</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="••••••••"
+                placeholderTextColor="#B0B3C0"
+                secureTextEntry
+                value={form.password}
+                onChangeText={(v) => setField("password", v)}
+              />
+            </View>
+
+            <View style={styles.field}>
+              <Text style={styles.label}>Telefon (opțional)</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="07xx xxx xxx"
+                placeholderTextColor="#B0B3C0"
+                keyboardType="phone-pad"
+                value={form.phone}
+                onChangeText={(v) => setField("phone", v)}
+              />
+            </View>
+
+            <View style={styles.field}>
+              <Text style={styles.label}>Adresa implicită de ridicare</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Str. Observatorului 10, Cluj-Napoca"
+                placeholderTextColor="#B0B3C0"
+                value={form.pickupAddress}
+                onChangeText={(v) => setField("pickupAddress", v)}
+              />
+            </View>
+
+            {error && <Text style={styles.error}>{error}</Text>}
+
+            <TouchableOpacity
+              style={[styles.primaryButton, loading && { opacity: 0.7 }]}
+              onPress={onSubmit}
+              disabled={loading}
+            >
+              <Text style={styles.primaryButtonText}>
+                {loading ? "Se creează contul..." : "Sign Up"}
+              </Text>
+            </TouchableOpacity>
+
+            <View style={styles.footerRow}>
+              <Text style={styles.footerText}>Ai deja cont?</Text>
+              <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+                <Text style={styles.footerLink}>Login</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 }
+
+const styles = StyleSheet.create({
+  gradient: {
+    flex: 1,
+  },
+  scroll: {
+    flexGrow: 1,
+    justifyContent: "center",
+    paddingHorizontal: 24,
+  },
+  card: {
+    backgroundColor: "white",
+    borderRadius: 28,
+    paddingHorizontal: 24,
+    paddingVertical: 32,
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
+  },
+  illustrationCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: "#F3F2FF",
+    alignSelf: "center",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 16,
+  },
+  doorShape: {
+    width: 30,
+    height: 46,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: "#5B4BDF",
+    borderBottomLeftRadius: 4,
+    borderBottomRightRadius: 4,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "700",
+    textAlign: "center",
+    marginBottom: 4,
+    color: "#111827",
+  },
+  subtitle: {
+    fontSize: 13,
+    textAlign: "center",
+    color: "#6B7280",
+    marginBottom: 24,
+  },
+  field: {
+    marginBottom: 14,
+  },
+  label: {
+    fontSize: 13,
+    color: "#6B7280",
+    marginBottom: 4,
+  },
+  input: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    backgroundColor: "#F9FAFB",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: "#111827",
+  },
+  error: {
+    color: "#DC2626",
+    fontSize: 12,
+    marginTop: 4,
+    marginBottom: 8,
+  },
+  primaryButton: {
+    marginTop: 8,
+    backgroundColor: "#5B4BDF",
+    borderRadius: 999,
+    paddingVertical: 12,
+    alignItems: "center",
+  },
+  primaryButtonText: {
+    color: "white",
+    fontWeight: "600",
+    fontSize: 15,
+  },
+  footerRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 16,
+  },
+  footerText: {
+    color: "#6B7280",
+    fontSize: 13,
+  },
+  footerLink: {
+    marginLeft: 4,
+    color: "#5B4BDF",
+    fontWeight: "600",
+    fontSize: 13,
+  },
+});

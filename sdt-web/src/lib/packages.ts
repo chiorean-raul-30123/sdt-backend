@@ -1,4 +1,4 @@
-import { api } from "./http";
+import { api } from "./api";
 import type { PackageCreateDto, PackageDto } from "../types";
 
 export async function createPackage(input: PackageCreateDto): Promise<PackageDto> {

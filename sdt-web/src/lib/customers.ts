@@ -1,4 +1,4 @@
-import { api } from "./http";
+import { api } from "./api";
 import axios from "axios";
 import type { CustomerDto, CustomerCreateDto } from "../types";
 

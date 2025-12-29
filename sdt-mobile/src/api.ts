@@ -1,20 +1,21 @@
 import axios from "axios";
 import { Platform } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const ANDROID_BASE = "http://10.0.2.2:8080"; // emulator
-const IOS_BASE = "http://localhost:8080";    // iOS simulator
-const DEVICE_BASE = ANDROID_BASE;
-
-export const BASE_URL =
+const HOST =
   Platform.OS === "android"
-    ? ANDROID_BASE
-    : Platform.OS === "ios"
-    ? IOS_BASE
-    : DEVICE_BASE;
+    ? "http://10.0.2.2:8080"   
+    : "http://localhost:8080";
 
 const api = axios.create({
-  baseURL: `${BASE_URL}/api`,
+  baseURL: `${HOST}/api`,
   timeout: 10000,
+});
+
+api.interceptors.request.use(async (config) => {
+  const token = await AsyncStorage.getItem("auth_token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
 });
 
 export default api;

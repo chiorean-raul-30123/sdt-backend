@@ -1,4 +1,4 @@
-import api from "./api";
+import { api } from "./api";
 import type { CourierCreateDto, CourierDto, Page, PackageDto, CourierPatchDto } from "../types";
 
 export async function fetchCouriers(params: { page?: number; size?: number; sort?: string }) {
@@ -29,12 +29,7 @@ export async function fetchPackagesByCourier(
   return res.data;
 }
 
-export type CourierPatch = Partial<Pick<CourierDto, "name" | "email" | "managerId" | "lastLat" | "lastLng">>;
-
-export async function patchCourier(
-  id: number,
-  patch: CourierPatchDto
-): Promise<CourierDto> {
-  const { data } = await api.patch<CourierDto>(`/couriers/${id}`, patch);
-  return data;
+export async function patchCourier(id: number, payload: CourierPatchDto) {
+  const res = await api.patch<CourierPatchDto>(`/couriers/${id}`,payload);
+  return res.data;
 }

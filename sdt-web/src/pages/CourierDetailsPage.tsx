@@ -9,6 +9,7 @@ import {
 import type { CourierDto, Page, PackageDto, CourierPatchDto } from "../types";
 import CreatePackageForm from "../components/CreatePackageForm";
 
+
 export default function CourierDetailsPage() {
   const { id } = useParams();
   const courierId = Number(id);
@@ -32,7 +33,7 @@ export default function CourierDetailsPage() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  // ----- RELOAD: funcție unică ce reîncarcă curierul + pachetele
+
   const reload = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -50,17 +51,17 @@ export default function CourierDetailsPage() {
     }
   }, [courierId, page]);
 
-  // La mount / schimbare id / paginare -> reload
+
   useEffect(() => {
     if (!Number.isNaN(courierId)) reload();
   }, [reload]);
 
-  // Sincronizează formularul de edit cu datele curente ale curierului
+
   useEffect(() => {
     if (courier) {
       setEdit({
-        name: courier.name,
-        email: courier.email,
+        name: courier.name.trim(),
+        email: courier.email.trim(),
         managerId: courier.managerId ?? null,
         lastLat: courier.lastLat ?? null,
         lastLng: courier.lastLng ?? null,
